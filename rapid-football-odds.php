@@ -13,7 +13,7 @@
  * @package           Rapid_Football_Odds
  *
  * @wordpress-plugin
- * Plugin Name:       Rapid Football Odds
+ * Plugin Name:       Rapid Football Odds Viet
  * Plugin URI:        https://github.com/AcePointer/rapid-football-odds
  * Description:       An API plugin to call for the odds and livescore. Fully customised to comply with the needs of SEO Microsites.
  * Version:           1.4.1
