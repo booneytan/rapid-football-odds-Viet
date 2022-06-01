@@ -1,0 +1,513 @@
+<?php
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+/**
+ * The public-facing functionality of the plugin.
+ *
+ * @link       https://localhost.localdomain
+ * @since      1.0.0
+ *
+ * @package    Rapid_Football_Odds
+ * @subpackage Rapid_Football_Odds/public
+ */
+
+/**
+ * The public-facing functionality of the plugin.
+ *
+ * Defines the plugin name, version, and two examples hooks for how to
+ * enqueue the public-facing stylesheet and JavaScript.
+ *
+ * @package    Rapid_Football_Odds
+ * @subpackage Rapid_Football_Odds/public
+ * @author     Dev Team <dev@localhost.localdomain>
+ */
+class Rapid_Football_Odds_Public {
+
+	/**
+	 * The ID of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $plugin_name    The ID of this plugin.
+	 */
+	private $plugin_name;
+
+	/**
+	 * The version of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $version    The current version of this plugin.
+	 */
+	private $version;
+
+	/**
+	 * Initialize the class and set its properties.
+	 *
+	 * @since    1.0.0
+	 * @param      string    $plugin_name       The name of the plugin.
+	 * @param      string    $version    The version of this plugin.
+	 */
+	public function __construct( $plugin_name, $version ) {
+
+		$this->plugin_name = $plugin_name;
+		$this->version = $version;
+
+	}
+
+	/**
+	 * Register the stylesheets for the public-facing side of the site.
+	 *
+	 * @since    1.0.0
+	 */
+	public function enqueue_styles() {
+
+		/**
+		 * This function is provided for demonstration purposes only.
+		 *
+		 * An instance of this class should be passed to the run() function
+		 * defined in Rapid_Football_Odds_Loader as all of the hooks are defined
+		 * in that particular class.
+		 *
+		 * The Rapid_Football_Odds_Loader will then create the relationship
+		 * between the defined hooks and the functions defined in this
+		 * class.
+		 */
+
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/rapid-football-odds-new.css', array(), $this->version, 'all' );
+
+	}
+
+	/**
+	 * Register the JavaScript for the public-facing side of the site.
+	 *
+	 * @since    1.0.0
+	 */
+	public function enqueue_scripts() {
+
+		/**
+		 * This function is provided for demonstration purposes only.
+		 *
+		 * An instance of this class should be passed to the run() function
+		 * defined in Rapid_Football_Odds_Loader as all of the hooks are defined
+		 * in that particular class.
+		 *
+		 * The Rapid_Football_Odds_Loader will then create the relationship
+		 * between the defined hooks and the functions defined in this
+		 * class.
+		 */
+
+		//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/rapid-football-odds-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/script.js', array(), $this->version, true );
+
+	}
+
+	public function clear_cache() {
+		$files = glob(dirname(__FILE__) . '/cache/*'); // get all file names
+		foreach ($files as $file) { // iterate files
+			if (is_file($file)) {
+				unlink($file); // delete file
+			}
+		}
+	}
+
+	public function default_function($atts, $cache_file = NULL, $expires = NULL) {
+		$a = shortcode_atts( array(
+			'href'  =>  '#',
+			'show' => '10',
+			'league' => 'flase',
+			'logo' => 'true',
+			'reverse' => 'false',
+    ), $atts );
+
+		$cache_file = dirname(__FILE__) . '/cache/default-api-cache-show-' . $a['show'] . '-with-league-' . $a['league'] . '-and-logo-' . $a['logo'] . '-in-reverse-' . $a['reverse'] . '.txt';
+		$expires = time() - 4*60*60;
+
+		if( !file_exists($cache_file) ) fopen($cache_file, "rw");
+		// Check that the file is older than the expire time and that it's not empty
+		if ( filectime($cache_file) < $expires || file_get_contents($cache_file)  == '' ) {
+			$all_response = '<div class="odds-section grid-carousel"><button class="left"><a href="#"><span class="button_icon"><i class="icon-left-open-big"></i></span></a></button>';
+			
+			$odds = $this->get_odds_by_page(1);
+
+			if ($a['reverse'] == 'true') {
+				$odds = array_reverse($odds);
+			}
+			
+			$count = 0;
+
+			foreach ($odds as $odd) {
+				$r = '';
+				$r .= '<tr class="odds-values-row">';
+				foreach ($odd->bookmakers[0]->bets[0]->values as $value) {
+					$r .= '<td>';
+
+					switch ($value->value) {
+						case 'Home' : $r .= 'Đội nhà '; break;
+						case 'Draw' : $r .= 'Hòa '; break;
+						case 'Away' : $r .= 'Đội khách '; break;
+						default : '';
+					}
+					$r .= $value->odd . '</td>';
+				}
+				$r .= '</tr>';
+
+				$fixture_id = $odd->fixture->id;
+				$fixture = $this->get_fixture_by_id($fixture_id)[0];
+				
+				$response = '<div class="odds-div grid-carousel__slide"><table class="odds-table">';
+				if ($a['league'] == 'true') {
+					$response .= '<tr><div class="league-logo-name">';
+					if ($a['logo'] == 'true') {
+						$response .= '<img class="league-logo" width="20" height="20" src="' . $fixture->league->logo . '" /> ';
+					}
+					$response .= $fixture->league->name  . '</div></tr>';
+				}
+
+				$response .= '<tr>';
+				$response .= '<td><div class="team-name-logo-left">';
+
+				if ($a['logo'] == 'true') {
+					// $response .= '<div class="team-logo"><img src="' . $fixture->teams->home->logo . '" /></div> ';
+						$response .= '<img class="team-logo" width="20" height="20" src="' . plugin_dir_url( __FILE__ ) . 'images/Red_user.png" />';
+				}
+
+				$response .= '<p>' . $fixture->teams->home->name . '</p></div></td>';
+				$response .= '<td>' . date("F j", strtotime($fixture->fixture->date)) . '<br />' . date("g:i a", strtotime($fixture->fixture->date)) . '</td>';
+				$response .= '<td><div class="team-name-logo-right">';
+
+				if ($a['logo'] == 'true') {
+					// $response .= '<div class="team-logo"><img src="' . $fixture->teams->away->logo . '" /></div> ';
+						$response .= '<img width="20" height="20" class="team-logo" src="' . plugin_dir_url( __FILE__ ) . 'images/Black_user.png" />';
+				}
+
+				$response .= '<p>' . $fixture->teams->away->name . '</p></div></td>';
+				$response .= '</tr>';
+				$response .= $r;
+				$response .= '</table>';
+				$response .= '<a class="odds-button" target="_blank" href="' . $a['href'] . '">ĐẶT CƯỢC NGAY</a></div>';
+
+				$all_response .= $response;
+				$count++;
+
+				if ($count == $a['show']) {
+					break;
+				}
+			}
+			$all_response .= '<button class="right"><a href="#"><span class="button_icon"><i class="icon-right-open-big"></i></span></a></button></div>';
+      file_put_contents($cache_file, $all_response);
+    } else {
+        $all_response = file_get_contents($cache_file);
+    }
+		return $all_response;
+	}
+
+	public function table_function($atts, $cache_file = NULL, $expires = NULL) {
+		$a = shortcode_atts( array(
+			'href'  =>  '#',
+			'league'  =>  '',
+    ), $atts );
+
+		$cache_file = dirname(__FILE__) . '/cache/table-api-cache-with-league-' . $a['league'] .'.txt';
+		$expires = time() - 12*60*60;
+
+		if( !file_exists($cache_file) ) fopen($cache_file, "rw");
+		// Check that the file is older than the expire time and that it's not empty
+		if ( filectime($cache_file) < $expires || file_get_contents($cache_file)  == '' ) {
+			$all_response = '<table class="table-odds-section">';
+			
+			if ($a['league'] != '') {
+				$page_total = $this->get_odds_league_page_total($a['league']);
+				$curr = (array) null;
+
+				for ($i = 1; $i <= $page_total; $i++) {
+					if (empty($curr)) {
+						$curr = $this->get_odds_by_league($a['league'], $i);
+					} else {
+						$temp = $this->get_odds_by_league($a['league'], $i);
+						$curr = array_merge($curr, $temp);
+						$odds = $curr;
+						
+					}
+				}
+			} else {
+				$first = $this->get_odds_by_page(1);
+				$second = $this-> get_odds_by_page(2);
+				$odds = array_merge($first, $second);
+			}
+
+			$league_id = '1';
+
+			foreach ($odds as $odd) {
+				foreach ($odd->bookmakers[0]->bets as $bet) {
+					if ($bet->name == 'Match Winner') {
+						$match_winner = '<td>';
+						foreach ($bet->values as $value) {
+							switch ($value->value) {
+								case 'Home' : $match_winner .= 'Đội nhà '; break;
+								case 'Draw' : $match_winner .= 'Hòa '; break;
+								case 'Away' : $match_winner .= 'Đội khách '; break;
+								default : '';
+							}
+							$match_winner .= ' : ' . $value->odd . '<br />';
+						}
+						$match_winner .= '</td>';
+					} else if ($bet->name == 'Goals Over/Under') {
+						$over_under = '<td>';
+						foreach ($bet->values as $value) {
+							switch (explode(' ',trim($value->value))[0]) {
+								case 'Over' : $over_under .= str_replace('Over', 'Tài', $value->value); break;
+								case 'Under' : $over_under .= str_replace('Under', 'Xỉu', $value->value); break;
+								default : '';
+							}
+							$over_under .= ' : ' . $value->odd . '<br />';
+						}
+						$over_under .= '</td>';
+					} else if ($bet->name == 'Handicap Result') {
+						$handicap = '<td>';
+						foreach ($bet->values as $value) {
+							switch (explode(' ',trim($value->value))[0]) {
+								case 'Home' : $handicap .= str_replace('Home', 'Đội nhà', $value->value); break;
+								case 'Draw' : $handicap .= str_replace('Draw', 'Hòa', $value->value); break;
+								case 'Away' : $handicap .= str_replace('Away', 'Đội khách', $value->value); break;
+								default : '';
+							}
+							$handicap .= ' : ' . $value->odd . '<br />';
+						}
+						$handicap .= '</td>';
+					} else if ($bet->name == 'Odd/Even') {
+						$odd_even = '<td>';
+						foreach ($bet->values as $value) {
+							switch ($value->value) {
+								case 'Odd' : $odd_even .= 'Chẵn'; break;
+								case 'Even' : $odd_even .= 'Lẻ'; break;
+								default: '';
+							}
+							$odd_even .= ' : ' . $value->odd . '<br />';
+						}
+						$odd_even .= '</td>';
+					}
+				}
+
+				$fixture_id = $odd->fixture->id;
+				$fixture = $this->get_fixture_by_id($fixture_id)[0];
+				if ($league_id != $fixture->league->id) {
+					$response = '<tr class="league-row">';
+					$response .= '<table class="table-odds-section">';
+					$response .= '<th colspan="6"><div>';
+					$response .= '<img width="50" height="50" class="table-league-logo" src="' . $fixture->league->logo . '" />';
+					$response .= $fixture->league->name . '</div></th></tr>';
+
+					$response .= '<tr class="header-row">';
+					$response .= '<td><b>Giờ</b></td>';
+					$response .= '<td><b>Trận Đấu</b></td>';
+					$response .= '<td><b>Kèo Tài Xỉu</b></td>';
+					$response .= '<td><b>Kèo Chẵn Lẻ</b></td>';
+					$response .= '<td><b>Kèo Châu Á</b></td>';
+					$response .= '<td><b>1x2</b></td>';
+					$response .= '</tr>';
+
+					$league_id = $fixture->league->id;
+				} else {
+					$response = '';
+				}
+
+				$data_date = date("Y-m-d", strtotime($fixture->fixture->date));
+
+				if($data_date >= date("Y-m-d")) {
+					$response .= '<tr class="match-row">';
+					$response .= '<td>';
+					$response .= '<div class="blk_teamlogo"><div class="teamlogo">';
+					$response .= '<img class="team-logo" width="20" height="20" src="' . plugin_dir_url( __FILE__ ) . 'images/Red_user.png" /><br/>';
+					$response .= $fixture->teams->home->name;
+					$response .= '</div>';
+					$response .= '<span style="padding: 0 20px;">vs</span>';
+					$response .= '<div class="teamlogo">';
+					$response .= '<img width="20" height="20" class="team-logo" src="' . plugin_dir_url( __FILE__ ) . 'images/Black_user.png" /><br/>';
+					$response .= $fixture->teams->away->name;
+					$response .= '</div></div>';
+					$response .= '</td>';
+
+					$response .= '<td><center>' . date("G:i", strtotime($fixture->fixture->date));
+					$response .= '<br />' . date("F d", strtotime($fixture->fixture->date)) . '</center></td>';
+
+					if ($over_under != '') {
+						$response .= $over_under;
+					} else {
+						$response .= '<td></td>';
+					}
+					
+					if ($odd_even != '') {
+						$response .= $odd_even;
+					} else {
+						$response .= '<td></td>';
+					} 
+					
+					if ($handicap != '') {
+						$response .= $handicap;
+					} else {
+						$response .= '<td></td>';
+					}
+					
+					if ($match_winner != '') {
+						$response .= $match_winner;
+					} else {
+						$response .='<td></td>';
+					}
+					$response .= '</tr>';
+					$response .= '<tr class="button-row">';
+					$response .= '<td colspan="6" padding="10px">';
+					$response .= '<a class="odds-button" target="_blank" href="' . $a['href'] . '">ĐẶT CƯỢC NGAY</a>';
+					$response .= '</td>';
+					$response .= '</tr>';
+				}
+				
+				$all_response .= $response;
+			}
+			$all_response .= '</table>';
+      file_put_contents($cache_file, $all_response);
+    } else {
+        $all_response = file_get_contents($cache_file);
+    }
+		return $all_response;
+	}
+
+	public function livescore_function() {
+		$response = '';
+		$response = '
+		<div 
+			id="wg-api-football-fixtures"
+			data-host="api-football-v1.p.rapidapi.com"
+			data-refresh="60"
+			data-date="' . date("Y-m-d") . '"
+			data-key="b6f33c4ba7msh735c1886037388cp1e65cejsn86201e3a7c05"
+			data-theme="grey"
+			data-show-errors="false"
+			class="api_football_loader">
+		</div>
+		<script
+				type="module"
+				src="https://widgets.api-sports.io/football/1.1.8/widget.js">
+		</script>';
+		return $response;
+	}
+
+	private function get_fixture_by_id($fixture_id) {
+		$curl = curl_init();
+
+		curl_setopt_array($curl, [
+			CURLOPT_URL => "https://api-football-v1.p.rapidapi.com/v3/fixtures?id=" . $fixture_id,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "GET",
+			CURLOPT_HTTPHEADER => [
+				"x-rapidapi-host: api-football-v1.p.rapidapi.com",
+				"x-rapidapi-key: b6f33c4ba7msh735c1886037388cp1e65cejsn86201e3a7c05"
+			],
+		]);
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+
+		if ($err) {
+			return "cURL Error #:" . $err;
+		} else {
+			return json_decode($response)->response;
+		}
+	}
+
+	private function get_odds_by_page($page_number) {
+		$curl = curl_init();
+
+		curl_setopt_array($curl, [
+			CURLOPT_URL => "https://api-football-v1.p.rapidapi.com/v3/odds?date=" . date("Y-m-d") . "&timezone=Asia%2FHo_Chi_Minh&page=" . $page_number,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "GET",
+			CURLOPT_HTTPHEADER => [
+				"x-rapidapi-host: api-football-v1.p.rapidapi.com",
+				"x-rapidapi-key: b6f33c4ba7msh735c1886037388cp1e65cejsn86201e3a7c05"
+			],
+		]);
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+
+		if ($err) {
+			return "cURL Error #:" . $err;
+		} else {
+			return json_decode($response)->response;
+		}
+	}
+
+	private function get_odds_league_page_total($league_id) {
+		$curl = curl_init();
+
+		curl_setopt_array($curl, [
+			CURLOPT_URL => "https://api-football-v1.p.rapidapi.com/v3/odds?league=" . $league_id . "&season=" . date("Y") . "&timezone=Asia%2FHo_Chi_Minh",
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "GET",
+			CURLOPT_HTTPHEADER => [
+				"x-rapidapi-host: api-football-v1.p.rapidapi.com",
+				"x-rapidapi-key: b6f33c4ba7msh735c1886037388cp1e65cejsn86201e3a7c05"
+			],
+		]);
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+
+		if ($err) {
+			return "cURL Error #:" . $err;
+		} else {
+			return json_decode($response)->paging->total;
+		}
+	}
+
+	private function get_odds_by_league($league_id, $page_number) {
+		$curl = curl_init();
+
+		curl_setopt_array($curl, [
+			CURLOPT_URL => "https://api-football-v1.p.rapidapi.com/v3/odds?league=" . $league_id . "&season=" . date("Y") . "&timezone=Asia%2FHo_Chi_Minh&page=" . $page_number,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "GET",
+			CURLOPT_HTTPHEADER => [
+				"x-rapidapi-host: api-football-v1.p.rapidapi.com",
+				"x-rapidapi-key: b6f33c4ba7msh735c1886037388cp1e65cejsn86201e3a7c05"
+			],
+		]);
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+
+		if ($err) {
+			return "cURL Error #:" . $err;
+		} else {
+			return json_decode($response)->response;
+		}
+	}
+}

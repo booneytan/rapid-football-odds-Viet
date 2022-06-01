@@ -1,0 +1,479 @@
+/**
+ * All of the CSS for your public-facing functionality should be
+ * included in this file.
+ */
+/* -----Deafult Odds CSS Styling----- */
+.odds-section {
+    /* display: inline-flex;
+    flex-flow: wrap; */
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .odds-div {
+    padding: 10px 5px 5px;
+    background-color: white;
+    width: 100%;
+    height: max-content;
+    display: inline-block;
+    margin: 5px 5px;
+    text-align: center;
+    border: solid 1px #e3e3e3;
+    box-shadow: 0 4px 10px 0 rgb(0 0 0 / 4%);
+    border-radius: 14px;
+  }
+  
+  /* @media only screen and (min-width: 1280px) {
+    .odds-div:first-child:nth-last-child(3),
+    .odds-div:first-child:nth-last-child(3) ~ .odds-div {
+      max-width: calc(100% / 3 - 15px);
+    }
+  } */
+  
+  .odds-table {
+    font-size: 11px;
+    margin-bottom: 0;
+  }
+  
+  .odds-table tr:nth-child(odd) > td {
+    background-color: transparent;
+  }
+  
+  .odds-table tr.odds-values-row > td {
+    background-color: #d9d9d9 !important;
+    border: 1px solid rgba(255, 255, 255, 0.7) !important;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #000;
+    border-radius: 5px;
+    padding: 5px;
+  }
+  
+  .odds-table td {
+    text-align: center;
+    vertical-align: middle !important;
+    border: none !important;
+    padding: 5px 0;
+    /* width: 7.5rem; */
+    font-size: 10px;
+    line-height: 12px;
+    color: #808080;
+  }
+
+  .league-logo {
+    margin-right: 5px;
+  }
+  
+  .league-logo-name {
+    font-weight: bolder;
+    padding: 0;
+    color: #000;
+  }
+  
+  .league-logo-name,
+  .team-name-logo-left,
+  .team-name-logo-right {
+    align-items: center;
+  }
+  
+  .team-name-logo-left p,
+  .team-name-logo-right p {
+    font-size: 10px;
+    line-height: 12px;
+    color: #808080;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .team-name-logo-left {
+    float: left;
+  }
+  
+  .team-name-logo-right {
+    float: right;
+  }
+  
+  .team-logo {
+    width: 40px;
+    height: 40px !important;
+    margin-right: 5px;
+    object-fit: contain;
+    border: 5px solid #F4F4F4F4;
+    border-radius: 50%;
+    margin: 5px auto;
+  }
+
+  .team-logo img {
+    max-width: 100%;
+    height: 30px !important;
+  }
+  
+  .odds-button {
+    font-size: 14px;
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    margin: 15px auto;
+    padding: 5px 10%;
+    border-radius: 8px;
+    background-image: linear-gradient(to bottom, #f46758, #e53460, #e43260);
+  }
+  
+  .odds-button:hover,
+  .odds-button:focus {
+    filter: brightness(85%);
+    color: white;
+    text-decoration: none;
+  }
+  
+  /* ----Table Odds CSS Styling----- */
+  table.table-odds-section {
+    width: 100% !important;
+    background-color: white;
+    /* border: 1px solid #E3E3E3; */
+    box-shadow: 3px 3px 10px #D0D0D0; 
+    border-radius: 12px !important;
+    margin-bottom: 20px;
+  }
+  
+  .table-odds-section td {
+    font-size: 11px !important;
+    line-height: 1.45;
+    white-space: nowrap;
+    padding: 0.5rem 1rem !important;
+    border-color: #F5F5F5 !important;
+    border-width: 1px 1px 1px 0px;
+    vertical-align: middle;
+    color: #808080;
+    text-align: left;
+  }
+  
+  .table-odds-section th {
+    padding: 5px 10px;
+    border: 0;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: left;
+    color: #000;
+    box-shadow: none;
+  }
+  
+  .table-odds-section tr td:first-child {
+    width: 5rem;
+    text-align: center;
+  }
+  
+  .table-odds-section tr.header-row,
+  .table-odds-section tr.header-row:hover {
+    background-color: #F7F7F7;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: normal;
+    color: #9a9a9a;
+  }
+  
+  .table-league-logo {
+    width: 30px;
+    height: auto;
+    margin: 5px 10px 5px 0px;
+  }
+  
+  .league-row div {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 700;
+    color: #020202;
+    font-size: 14px;
+  }
+  
+  .league-row > th {
+    background-color: #FFFFFF;
+    border-width: 1px 1px 0;
+    border-color: #F0F0F0;
+  }
+  
+  .league-row > th,
+  .team-name-column {
+    text-align: left;
+  }
+  
+  .match-row .team-name-column {
+    font-weight: 700;
+  }
+  
+  @media only screen and (max-width: 768px) {
+    table.table-odds-section {
+      table-layout: fixed;
+      width: 100vw;
+      max-width: calc(100vw - 60px);
+    }
+  
+    .table-odds-section td {
+      font-size: 0.5rem !important;
+      line-height: 0.7rem;
+      padding: 0.25rem 0.5rem !important;
+      overflow: auto;
+    }
+  
+    .table-odds-section th {
+      font-size: 0.7rem;
+    }
+  }
+
+/* Additional Style */
+.odds-section table.odds-table tr td {
+  background: none;
+  max-width: 36px;
+}
+.blk_teamlogo {
+    display: flex;
+    align-items: center;
+}
+
+.teamlogo {
+    width: 100%;
+}
+
+tr.button-row td {
+    border: 0 !important;
+}
+
+.table-odds-section th, 
+.table-odds-section th div, 
+.table-odds-section th img {
+    vertical-align: middle !important;
+    border-radius: 12px 12px 0 0;
+}
+
+.odds-div table tr:first-child td { 
+    box-shadow: none !important;
+}
+
+table.odds-table {
+  border-spacing: 10px 0px !important;
+  border-collapse: separate !important;
+}
+
+.league-logo-name {
+  font-size: 14px !important;
+  line-height: 20px !important;
+  vertical-align: middle !important;
+  align-items: center;
+  display: inline-flex;
+  margin-bottom: -15px;
+}
+
+.table-odds-section .odds-button {
+    padding: 10px 10% !important;
+}
+
+tr.odds-values-row td {
+  min-width: 78px;
+}
+
+.odds-section .odds-button {
+  width: 90%;
+}
+
+.home-goal, 
+.away-goal {
+  font-size: 30px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.home-goal {
+  color: #e50000;
+}
+
+.away-goal {
+  color: #000000;
+}
+
+.vs-text {
+  font-size: 30px;
+  margin: 0;
+}
+
+.status {
+  font-size: 11px;
+  text-align: center;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* Grid Carousel */
+.slider-wrapper {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.slider-wrapper .slider-nav {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  }
+.slider-wrapper:hover .slider-nav {
+  display: block;
+  transition: 0.5s;
+}
+.slider-wrapper .slider-nav span {
+    color: #7f7f7f;
+    font-size: 3rem;
+    height: 64%;
+    background-color: #FFFFFF !important;
+    filter: drop-shadow(0px 0px 90px rgba(255,255,255,.5)) !important;
+    box-shadow: 0px 0px 10px 10px #ffffff !important;
+    border: 0 !important;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    z-index: 99999;
+  }
+
+  .slider-wrapper .slider-nav span:hover {
+    color: #000;
+  }
+  
+  .slider-wrapper .slider-nav span#next {
+    right: 2%;
+  }
+.slider-wrapper .slider {
+    height: 280px;
+    display: flex;
+    justify-content: flex-start;
+    transition: 0.3s ease-in-out;
+  }
+.slider-wrapper .slider .browser {
+    position: relative;
+    width: 294px;
+    height: 85%;
+    flex-shrink: 0;
+    border-radius: 14px;
+    z-index: 1;
+    margin-right: 10px;
+  }
+.slider-wrapper .slider .browser::before {
+    content: "";
+    height: 50px;
+    width: 60%;
+    position: absolute;
+    bottom: -25px;
+    left: 5px;
+    transform: skewY(-5deg);
+    filter: blur(5px);
+    z-index: -1;
+  }
+.slider-wrapper .slider .browser::after {
+    content: "";
+    height: 50px;
+    width: 60%;
+    position: absolute;
+    bottom: -25px;
+    right: 5px;
+    transform: skewY(5deg);
+    filter: blur(5px);
+    z-index: -1;
+  }
+
+/* Mobile View */
+@media only screen and (max-width: 767px){
+  .slider-wrapper:hover .slider-nav {
+    display: none;
+  }
+    
+  .table-odds, 
+  .slider-wrapper .slider, 
+  #wg-api-football-fixtures {
+    overflow-x: auto;
+  }
+    
+  .table-odds-section {
+    table-layout: auto !important;
+  }
+  
+  .table-odds-section td {
+    overflow: hidden !important;
+  }
+}
+
+/* Thai Lottery Table */
+.lottery_table {
+  overflow-x: auto;
+}
+
+.lottery_table table {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.lottery_table table, 
+.lottery_table th, 
+.lottery_table td {
+  border: 1px solid #cccccc;
+  border-collapse: collapse;
+  text-align: center;
+  padding: 10px 5px;
+}
+
+.lottery_table table .lotonum1, 
+.lottery_table table .lotonum2, 
+.lottery_table table .lotonum3 {
+  font-weight: 800;
+  /* color: #3c3c3c; */
+}
+
+.lottery_table table .lotonum1 {
+  font-size: 40px;
+}
+
+.lottery_table table .lotonum2 {
+  font-size: 25px;
+}
+
+.lottery_table table .lotonum3 {
+  font-size: 30px;
+}
+
+.lottery_table table tr th {
+  color: #3c3c3c;
+  font-weight: 800;
+  background-color: #edf2f6;
+}
+
+/* .lottery_table table tr td {
+  color: #3c3c3c;
+} */
+
+/* Vietnam Lottery */
+.vn-power p span, 
+.vn-mega p span {
+  display: inline-block;
+  border: 1px solid #a98640;
+  border-radius: 50%;
+  margin: 0 3px;
+  font-size: 25px;
+  line-height: 54px;
+  color: #3c3c3c;
+  text-align: center;
+  width: 54px;
+  height: 54px;
+}
+
+.vn-power p span:last-child {
+  background: #a98640 !important;
+  color: #FFFFFF !important;
+}
+
+/* Desktop View Only */
+@media only screen and (min-width: 768px){
+  #date-title {
+    top: -80px;
+    position: relative;
+  }
+}
